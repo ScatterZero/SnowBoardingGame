@@ -1,10 +1,10 @@
 1. Game Overview
 Snowboard Rush is a 2D arcade-style game built in Unity where the player controls a snowboarder skiing down a snowy mountain. The game features obstacle avoidance, trickery, and a coin collection system that rewards exploration and skill.
-
+https://github.com/ScatterZero/SnowBoardingGame/blob/be243071663f4ce250c06849012ac5a0df87c86b/Image/Screenshot%202025-03-04%20173604.png
 2. Gameplay Elements
 2.1 Skater
-Main Character - Default Equipment - Full Stamina
-
+Main Character - 
+https://github.com/ScatterZero/SnowBoardingGame/blob/be243071663f4ce250c06849012ac5a0df87c86b/Image/Screenshot%202025-03-04%20173616.png
 Controls:
 - Move left and right with A/D or Left/Right arrow keys
 - Jump with spacebar
@@ -18,7 +18,7 @@ Features:
 - Coin tracking
 
 2.2 Obstacles
-
+https://github.com/ScatterZero/SnowBoardingGame/blob/2969024ab3af34218ec17349cd660aca5d1d1630/Image/spike.png
 Attributes:
 - Obstacles that make it difficult for the player
 - Collision with an obstacle will end the game
@@ -30,11 +30,13 @@ Features:
 - Tricks combination system to get bonus points
 
 2.3 Monster Boost
+https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a5632c564d8992/Image/Monster-Energy.png
 Speed ​​Up Zone:
 - Found along the track
 - Temporary speed boost
 
 2.4 Coin collection system
+https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a5632c564d8992/Image/Screenshot%202025-03-04%20173654.png
 - Each level contains a maximum of 10 coins
 - Coins are scattered throughout the track
 - Players must explore and navigate skillfully to collect them all
@@ -42,9 +44,9 @@ Speed ​​Up Zone:
 
 3. Game flow
 3.1 Main menu
+   https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a5632c564d8992/Image/Screenshot%202025-03-04%20173624.png
 - Level selection system
-- Shows coin collection progress
-
+- You need to finished scene to unclock the next scene
 3.2 Gameplay
 - Difficulty increases as the track goes down
 - Pause system (ESC key)
@@ -54,6 +56,7 @@ Speed ​​Up Zone:
 - Exit game
 
 3.3 End game
+https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a5632c564d8992/Image/Screenshot%202025-03-04%20173717.png
 - Shows total coins collected
 - Tracks best coin collection for each level
 - Options to:
