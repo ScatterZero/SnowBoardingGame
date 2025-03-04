@@ -1,3 +1,15 @@
+## Snowboard Rush
+
+
+### Technical Requirements
+    Unity Version: Unity 6000.0.37f1
+    Target Platform: Windows.
+### Team Members
+    _Nguyễn Quang Sơn
+    _Võ Lê Đức Anh
+    _Phan Đức Hậu
+    _Nguyễn Minh Thành
+
 1. Game Overview
 Snowboard Rush is a 2D arcade-style game built in Unity where the player controls a snowboarder skiing down a snowy mountain. The game features obstacle avoidance, trickery, and a coin collection system that rewards exploration and skill.
 
