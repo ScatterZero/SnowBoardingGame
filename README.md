@@ -1,6 +1,8 @@
 1. Game Overview
 Snowboard Rush is a 2D arcade-style game built in Unity where the player controls a snowboarder skiing down a snowy mountain. The game features obstacle avoidance, trickery, and a coin collection system that rewards exploration and skill.
-![image alt](![image alt]())
+![Alt text](https://github.com/ScatterZero/SnowBoardingGame/blob/be243071663f4ce250c06849012ac5a0df87c86b/Image/Screenshot%202025-03-04%20173604.png
+)
+
 2. Gameplay Elements
 2.1 Skater
 Main Character - 
