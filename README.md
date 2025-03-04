@@ -1,6 +1,6 @@
 1. Game Overview
 Snowboard Rush is a 2D arcade-style game built in Unity where the player controls a snowboarder skiing down a snowy mountain. The game features obstacle avoidance, trickery, and a coin collection system that rewards exploration and skill.
-https://github.com/ScatterZero/SnowBoardingGame/blob/be243071663f4ce250c06849012ac5a0df87c86b/Image/Screenshot%202025-03-04%20173604.png
+![image alt](![image alt]())
 2. Gameplay Elements
 2.1 Skater
 Main Character - 
@@ -18,6 +18,7 @@ Features:
 - Coin tracking
 
 2.2 Obstacles
+![image alt]()
 https://github.com/ScatterZero/SnowBoardingGame/blob/2969024ab3af34218ec17349cd660aca5d1d1630/Image/spike.png
 Attributes:
 - Obstacles that make it difficult for the player
@@ -30,12 +31,14 @@ Features:
 - Tricks combination system to get bonus points
 
 2.3 Monster Boost
+![image alt]()
 https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a5632c564d8992/Image/Monster-Energy.png
 Speed ​​Up Zone:
 - Found along the track
 - Temporary speed boost
 
 2.4 Coin collection system
+![image alt]()
 https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a5632c564d8992/Image/Screenshot%202025-03-04%20173654.png
 - Each level contains a maximum of 10 coins
 - Coins are scattered throughout the track
@@ -44,6 +47,7 @@ https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a
 
 3. Game flow
 3.1 Main menu
+   ![image alt]()
    https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a5632c564d8992/Image/Screenshot%202025-03-04%20173624.png
 - Level selection system
 - You need to finished scene to unclock the next scene
@@ -56,6 +60,7 @@ https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a
 - Exit game
 
 3.3 End game
+![image alt]()
 https://github.com/ScatterZero/SnowBoardingGame/blob/1c57067a7f9c569d9d9f391b73a5632c564d8992/Image/Screenshot%202025-03-04%20173717.png
 - Shows total coins collected
 - Tracks best coin collection for each level
