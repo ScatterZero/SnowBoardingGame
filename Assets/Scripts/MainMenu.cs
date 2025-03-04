@@ -60,6 +60,11 @@ public class MainMenu : MonoBehaviour
             Help.SetActive(false);
         }
     }
+    public void BackToMainMenu()
+    {
+        chooseLevelCanvas.SetActive(false);
+        mainMenuCanvas.SetActive(true);
+    }
 
     public void QuitGame()
     {

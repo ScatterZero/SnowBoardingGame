@@ -99,7 +99,7 @@ public class ScoreManager : MonoBehaviour
     {
         score = 0;
         PlayerPrefs.SetInt("TotalScore", 0);
-        PlayerPrefs.SetString("LastLevel", "Level1");
+        //PlayerPrefs.SetString("LastLevel", "Level1");
         PlayerPrefs.Save();
         SceneManager.LoadScene("MainMenu");
     }
