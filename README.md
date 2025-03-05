@@ -2,7 +2,7 @@
 
 
 ### Technical Requirements
-    Unity Version: Unity 6000.0.37f1
+    Unity Version: Unity 6000.0.38f1
     Target Platform: Windows.
 ### Team Members
     _Nguyễn Quang Sơn
