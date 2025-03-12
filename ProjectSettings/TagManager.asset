@@ -8,14 +8,23 @@ TagManager:
   - Ground
   - Head
   - Skateboard
-  - scoreText
   - Help
   - Energy
+  - gameOverCanvas
+  - DeathZone
+  - SkiLine
+  - Skiline
+  - HighScoreText
+  - FinalScoreText
+  - NewHighScore
+  - ScoreText
+  - FarthestMarker
+  - BackgroundMusic
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
   - 

@@ -1,82 +1,88 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Text.RegularExpressions;
 
 public class GameCompleteManager : MonoBehaviour
 {
-    public Text scoreText;
-    public Button nextButton;
-    public GameObject messageCanvas;  // Canvas thông báo "SCENE NOT AVAILABLE"
+	[Header("UI Elements")]
+	public Text finalScoreText;
+	public Text highScoreText;
+	public GameObject newHighScoreNotification;
 
-    void Start()
-    {
-        Time.timeScale = 1;
+	[Header("Distance Records")]
+	public Text distanceTraveledText;
+	public Text farthestDistanceText;
+	public GameObject newDistanceRecordNotification;
 
-        int finalScore = PlayerPrefs.GetInt("TotalScore", 0);
-        if (scoreText != null)
-        {
-            scoreText.text = "Coin " + finalScore + "/10";
-        }
+	void Start()
+	{
+		Time.timeScale = 1;
 
-        UnlockNextLevel();
-    }
+		// Process score
+		int finalScore = PlayerPrefs.GetInt("LastScore", 0);
+		bool alreadyAdded = PlayerPrefs.GetInt("ScoreProcessed", 0) == 1;
+		bool isNewHighScore = false;
 
-    private bool isTransitioning = false;
+		if (!alreadyAdded && ScoreManager.Instance != null)
+		{
+			int highestScoreBefore = ScoreManager.Instance.GetHighestScore();
+			isNewHighScore = ScoreManager.Instance.AddScore(finalScore);
 
-    public void NextScene()
-    {
-        if (isTransitioning) return; // Nếu đang chuyển scene thì bỏ qua
-        isTransitioning = true;
+			if (finalScore <= highestScoreBefore)
+			{
+				isNewHighScore = false;
+			}
 
-        string lastLevel = PlayerPrefs.GetString("LastLevel", "Level1");
-        if (int.TryParse(Regex.Match(lastLevel, "\\d+").Value, out int nextLevel))
-        {
-            string nextSceneName = "Level" + (nextLevel + 1);
-            PlayerPrefs.SetString("LastLevel", nextSceneName);
-            PlayerPrefs.Save();
+			PlayerPrefs.SetInt("ScoreProcessed", 1);
+			PlayerPrefs.Save();
+		}
 
-            if (Application.CanStreamedLevelBeLoaded(nextSceneName))
-            {
-                SceneManager.LoadScene(nextSceneName);
-            }
-            else
-            {
-                ShowMessage();
-            }
-        }
-    }
+		// Update score UI
+		if (finalScoreText != null)
+		{
+			finalScoreText.text = "Final Score: " + finalScore;
+		}
 
+		if (highScoreText != null)
+		{
+			highScoreText.text = "High Score: " + (ScoreManager.Instance != null ?
+				ScoreManager.Instance.GetHighestScore() : 0);
+		}
 
-    public void BackToMainMenu()
-    {
-        PlayerPrefs.SetInt("TotalScore", 0);
-        PlayerPrefs.SetString("LastLevel", "Level1");
-        PlayerPrefs.Save();
-        SceneManager.LoadScene("MainMenu");
-    }
+		if (newHighScoreNotification != null)
+		{
+			newHighScoreNotification.SetActive(isNewHighScore);
+		}
 
-    void UnlockNextLevel()
-    {
-        string lastLevel = PlayerPrefs.GetString("LastLevel", "Level1");
-        if (int.TryParse(Regex.Match(lastLevel, "\\d+").Value, out int currentLevel))
-        {
-            int nextLevel = currentLevel + 1;
-            int unlockedLevel = PlayerPrefs.GetInt("LevelUnlocked", 1);
+		// Process distance records
+		float distanceTraveled = PlayerPrefs.GetFloat("LastDistance", 0f);
+		float farthestDistance = PlayerPrefs.GetFloat("FarthestDistance", 0f);
+		bool isNewDistanceRecord = distanceTraveled >= farthestDistance && distanceTraveled > 0;
 
-            if (nextLevel > unlockedLevel)
-            {
-                PlayerPrefs.SetInt("LevelUnlocked", nextLevel);
-                PlayerPrefs.Save();
-            }
-        }
-    }
+		// Update distance UI
+		if (distanceTraveledText != null)
+		{
+			distanceTraveledText.text = "Distance: " + Mathf.Floor(distanceTraveled) + "m";
+		}
 
-    void ShowMessage()
-    {
-        if (messageCanvas != null)
-        {
-            messageCanvas.SetActive(true);  // Hiển thị Canvas chứa thông báo
-        }
-    }
+		if (farthestDistanceText != null)
+		{
+			farthestDistanceText.text = "Farthest: " + Mathf.Floor(farthestDistance) + "m";
+		}
+
+		if (newDistanceRecordNotification != null)
+		{
+			newDistanceRecordNotification.SetActive(isNewDistanceRecord);
+		}
+	}
+
+	public void PlayAgain()
+	{
+		SceneManager.LoadScene("GamePlay");
+	}
+
+	public void BackToMainMenu()
+	{
+		SceneManager.LoadScene("MainMenu");
+	}
 }

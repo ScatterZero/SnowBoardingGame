@@ -1,102 +1,68 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class CrushDetector : MonoBehaviour
 {
-    [SerializeField] float loadDelay = 0.5f;
-    [SerializeField] ParticleSystem crushEffect;
-    [SerializeField] AudioClip crushSFX;
-    [SerializeField] GameObject gameOverCanvas; // Đảm bảo gán trong Inspector
-    bool hasCrushed = false;
+	[SerializeField] float loadDelay = 0.5f;
+	[SerializeField] AudioClip crushSFX;
 
-    void Start()
-    {
-        if (gameOverCanvas != null)
-        {
-            gameOverCanvas.SetActive(false);
-        }
-    }
+	private bool hasCrushed = false;
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (gameObject.CompareTag("Player") && other.CompareTag("Ground") && !hasCrushed)
-        {
-            HandleCrush();
-        }
-        else if ((gameObject.CompareTag("Player") || gameObject.CompareTag("Skateboard")) &&
-                 other.CompareTag("Spike") && !hasCrushed)
-        {
-            HandleCrush();
-        }
-    }
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		if (gameObject.CompareTag("Player") &&
+		    (other.CompareTag("Ground") || other.CompareTag("DeathZone")) &&
+		    !hasCrushed)
+		{
+			HandleCrush();
+		}
+		else if ((gameObject.CompareTag("Player") || gameObject.CompareTag("Skateboard")) &&
+		         other.CompareTag("Spike") && !hasCrushed)
+		{
+			HandleCrush();
+		}
+	}
 
-    void HandleCrush()
-    {
-        hasCrushed = true;
-        var playerController = FindAnyObjectByType<PlayerController>();
-        if (playerController != null)
-        {
-            playerController.DisableControls();
-        }
-        if (crushEffect != null)
-        {
-            crushEffect.Play();
-        }
-        AudioSource audioSource = GetComponent<AudioSource>();
-        if (audioSource != null && crushSFX != null)
-        {
-            audioSource.PlayOneShot(crushSFX);
-        }
+	void HandleCrush()
+	{
+		hasCrushed = true;
 
-        Invoke("ShowGameOver", loadDelay);
-    }
+		var playerController = FindAnyObjectByType<PlayerController>();
+		if (playerController != null)
+		{
+			Rigidbody2D rb = playerController.GetComponent<Rigidbody2D>();
+			if (rb != null)
+			{
+				rb.simulated = false;
+			}
+		}
 
-    void ShowGameOver()
-    {
-        if (gameOverCanvas != null)
-        {
-            // Hiển thị Canvas
-            gameOverCanvas.SetActive(true);
+		AudioSource audioSource = GetComponent<AudioSource>();
+		if (audioSource != null && crushSFX != null)
+		{
+			audioSource.PlayOneShot(crushSFX);
+		}
 
-            // Dừng hoàn toàn thời gian game
-            Time.timeScale = 0f;
+		// Save distance traveled
+		var distanceTracker = FindObjectOfType<DistanceTracker>();
+		if (distanceTracker != null)
+		{
+			float currentDistance = distanceTracker.GetCurrentDistance();
+			PlayerPrefs.SetFloat("LastDistance", currentDistance);
+			distanceTracker.SaveRecord();
+		}
 
-            // Vô hiệu hóa input (nếu bạn dùng Input System cũ)
-            // Nếu dùng Input System mới, bạn cần disable qua PlayerController
-            Cursor.visible = true; // Hiện con trỏ chuột để click nút
-            Cursor.lockState = CursorLockMode.None; // Mở khóa con trỏ
-            PauseMenu pauseMenu = Object.FindFirstObjectByType<PauseMenu>();
-            if (pauseMenu != null)
-            {
-                pauseMenu.enabled = false; // Tắt script PauseMenu
-                Debug.Log("PauseMenu disabled to prevent Escape input.");
-            }
-        }
-        else
-        {
-            Debug.LogError("GameOverCanvas chưa được gán trong Inspector!");
-        }
-    }
+		Invoke("LoadGameCompleteScene", loadDelay);
+	}
 
-    public void RetryButton()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        if (gameOverCanvas != null)
-        {
-            gameOverCanvas.SetActive(false);
-        }
-        hasCrushed = false;
-       
-    }
+	void LoadGameCompleteScene()
+	{
+		// Save current score
+		int currentScore = ScoreManager.Instance != null ? ScoreManager.Instance.GetCurrentScore() : 0;
+		PlayerPrefs.SetInt("LastScore", currentScore);
+		PlayerPrefs.SetInt("ScoreProcessed", 0); 
+		PlayerPrefs.Save();
 
-    public void QuitButton()
-    {
-        Time.timeScale = 1f; // Reset timescale trước khi thoát
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
-    }
+		SceneManager.LoadScene("GameCompleted");
+	}
 }

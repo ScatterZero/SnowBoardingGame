@@ -1,122 +1,210 @@
-﻿using System.Text.RegularExpressions;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Linq;
 
 public class ScoreManager : MonoBehaviour
 {
-    public static ScoreManager Instance;
-    private int score = 0; // Biến lưu điểm số tạm thời trong scene
-    public Text scoreText; // UI hiển thị điểm
-    public Button nextButton; // Nút Next
+	public static ScoreManager Instance;
+	private int currentScore = 0;
 
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // Giữ ScoreManager khi chuyển scene
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
+	[Header("UI Elements")]
+	public Text scoreText;
 
-        SceneManager.sceneLoaded += OnSceneLoaded; // Lắng nghe sự kiện load scene
-    }
+	[Header("High Score System")]
+	[SerializeField] private GameObject highScorePanel;
+	[SerializeField] private Text[] highScoreTexts;
 
-    void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded; // Hủy đăng ký sự kiện khi bị destroy
-    }
+	private const int MAX_HIGH_SCORES = 5;
+	private const string HIGH_SCORES_KEY = "HighScores";
 
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        string currentScene = scene.name;
+	private List<int> highScores = new List<int>();
 
-        if (currentScene.StartsWith("Level")) // Nếu là màn chơi, reset điểm và hiển thị scoreText
-        {
-            score = 0;
-            PlayerPrefs.SetInt("TotalScore", 0);
-            PlayerPrefs.Save();
-            UpdateScoreUI();
+	void Awake()
+	{
+		if (Instance == null)
+		{
+			Instance = this;
+			DontDestroyOnLoad(gameObject);
+			LoadHighScores();
+		}
+		else
+		{
+			Destroy(gameObject);
+			return;
+		}
 
-            if (scoreText != null) scoreText.gameObject.SetActive(true);
-        }
-        else // Nếu là Menu hoặc GameCompleted, ẩn scoreText
-        {
-            if (scoreText != null) scoreText.gameObject.SetActive(false);
-        }
+		SceneManager.sceneLoaded += OnSceneLoaded;
+	}
 
-        CheckNextButton(); // Cập nhật trạng thái nút Next
-    }
+	void OnDestroy()
+	{
+		SceneManager.sceneLoaded -= OnSceneLoaded;
+	}
 
-    public void AddScore(int amount)
-    {
-        score += amount;
-        PlayerPrefs.SetInt("TotalScore", score);
-        PlayerPrefs.Save();
-        UpdateScoreUI();
-    }
+	void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+	{
+		if (scene.name == "GamePlay")
+		{
+			currentScore = 0;
+			PlayerPrefs.SetInt("ScoreProcessed", 0);
+			PlayerPrefs.Save();
 
-    void UpdateScoreUI()
-    {
-        if (scoreText != null)
-        {
-            scoreText.text = "Coin " + score + "/10";
-        }
-        else
-        {
-            Debug.LogError("⚠️ ScoreText chưa được gán! Kéo UI Text vào ScoreManager.");
-        }
-    }
+			UpdateScoreUI();
+			if (scoreText != null) scoreText.gameObject.SetActive(true);
 
-    public void NextScene()
-    {
-        string lastLevel = PlayerPrefs.GetString("LastLevel", "Level1");
-        Match match = Regex.Match(lastLevel, @"\d+");
+		}
+		else if (scene.name == "GameCompleted")
+		{
 
-        if (match.Success)
-        {
-            int nextLevel = int.Parse(match.Value) + 1;
-            string nextSceneName = "Level" + nextLevel;
+			PlayerPrefs.SetInt("ScoreProcessed", 0);
+			PlayerPrefs.Save();
+		}
+		
+	}
 
-            if (!Application.CanStreamedLevelBeLoaded(nextSceneName))
-            {
-                SceneManager.LoadScene("GameCompleted");
-            }
-            else
-            {
-                PlayerPrefs.SetString("LastLevel", nextSceneName);
-                PlayerPrefs.Save();
-                SceneManager.LoadScene(nextSceneName);
-            }
-        }
-    }
 
-    public void BackToMainMenu()
-    {
-        score = 0;
-        PlayerPrefs.SetInt("TotalScore", 0);
-        PlayerPrefs.SetString("LastLevel", "Level1");
-        PlayerPrefs.Save();
-        SceneManager.LoadScene("MainMenu");
-    }
+	private void LoadHighScores()
+	{
+		highScores.Clear();
 
-    void CheckNextButton()
-    {
-        if (nextButton == null) return;
+		string scoresString = PlayerPrefs.GetString(HIGH_SCORES_KEY, "");
 
-        string lastLevel = PlayerPrefs.GetString("LastLevel", "Level1");
-        Match match = Regex.Match(lastLevel, @"\d+");
+		if (!string.IsNullOrEmpty(scoresString))
+		{
+			string[] scoreArray = scoresString.Split(',');
 
-        if (match.Success)
-        {
-            int nextLevel = int.Parse(match.Value) + 1;
-            string nextSceneName = "Level" + nextLevel;
+			foreach (string scoreStr in scoreArray)
+			{
+				if (int.TryParse(scoreStr, out int score))
+				{
+					highScores.Add(score);
+				}
+			}
+		}
 
-            nextButton.gameObject.SetActive(Application.CanStreamedLevelBeLoaded(nextSceneName));
-        }
-    }
+		while (highScores.Count < MAX_HIGH_SCORES)
+		{
+			highScores.Add(0);
+		}
+
+		highScores = highScores.OrderByDescending(score => score).ToList();
+
+		if (highScores.Count > MAX_HIGH_SCORES)
+		{
+			highScores = highScores.Take(MAX_HIGH_SCORES).ToList();
+		}
+	}
+
+	private void SaveHighScores()
+	{
+		string scoresString = string.Join(",", highScores);
+		PlayerPrefs.SetString(HIGH_SCORES_KEY, scoresString);
+		PlayerPrefs.Save();
+	}
+
+	public bool AddScore(int score)
+	{
+		bool isHighScore = false;
+
+		if (score > highScores.Last() || highScores.Count < MAX_HIGH_SCORES)
+		{
+			highScores.Add(score);
+			highScores = highScores.OrderByDescending(s => s).ToList();
+
+			if (highScores.Count > MAX_HIGH_SCORES)
+			{
+				highScores = highScores.Take(MAX_HIGH_SCORES).ToList();
+			}
+
+			SaveHighScores();
+			isHighScore = true;
+		}
+
+		return isHighScore;
+	}
+
+	public void AddPoints(int amount)
+	{
+		currentScore += amount;
+		UpdateScoreUI();
+	}
+
+	void UpdateScoreUI()
+	{
+		if (scoreText != null)
+		{
+			scoreText.text = "Score: " + currentScore;
+		}
+	}
+
+	public int GetCurrentScore()
+	{
+		return currentScore;
+	}
+
+	public int GetHighestScore()
+	{
+		if (highScores.Count > 0)
+		{
+			return highScores[0];
+		}
+		return 0;
+	}
+	public List<int> GetHighScores()
+	{
+		return new List<int>(highScores);
+	}
+
+	public void DisplayHighScores()
+	{
+		if (highScorePanel != null)
+		{
+			highScorePanel.SetActive(true);
+		}
+
+		for (int i = 0; i < highScoreTexts.Length && i < highScores.Count; i++)
+		{
+			if (highScoreTexts[i] != null)
+			{
+				highScoreTexts[i].text = (i + 1) + ". " + highScores[i];
+			}
+		}
+	}
+
+	public void HideHighScores()
+	{
+		if (highScorePanel != null)
+		{
+			highScorePanel.SetActive(false);
+		}
+	}
+
+	public void ResetScore()
+	{
+		currentScore = 0;
+		UpdateScoreUI();
+	}
+
+	public void ClearHighScores()
+	{
+		highScores.Clear();
+		for (int i = 0; i < MAX_HIGH_SCORES; i++)
+		{
+			highScores.Add(0);
+		}
+		SaveHighScores();
+	}
+
+	public void BackToMainMenu()
+	{
+		SceneManager.LoadScene("MainMenu");
+	}
+
+	public void StartGame()
+	{
+		currentScore = 0;
+		SceneManager.LoadScene("GamePlay");
+	}
 }
